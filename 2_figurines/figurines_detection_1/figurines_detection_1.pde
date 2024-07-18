@@ -4,22 +4,81 @@ boolean checkDetectionMode = false;
 int checkTries = 0;
 int selection = 0;
 
+
 Timer detectTimer;
 
+//
+
+int animalCount = 3;
+PImage[] animalImages;
+Page animalPage;
+Scanner scanner;
+
+boolean pageMode = false;
+
+
 void setup() {
+  size(1024, 600);
+
+  animalImages = loadPageImages("pages/");
+  scanner = new Scanner();
+  animalPage = new Page();
+
+
+
+  launchAnimal(0);
+
 
   detectTimer = new Timer(2000);
   detectTimer.start();
 }
 
 void draw() {
+  background(0, 0, 30);
+
+  //detectContinuosly();
+
+  scanner.render();
+  
+  if(scanner.isFinished()){
+   launchAnimal(selection); 
+  }
+  animalPage.render();
+}
 
 
+PImage[] loadPageImages(String path) {
+
+  PImage[] pageImages = new PImage[animalCount];
+
+  for (int i=0; i < animalCount; i++) {
+    pageImages[i] = loadImage(path + "figurine_" + i + ".png");
+  }
+
+  return pageImages;
+}
+
+void loadScanImages() {
+}
+
+
+void detectContinuosly() {
   if (detectTimer.isFinished()) {
     detect(readSwitches());
     detectTimer.start();
   }
-  
+}
+
+void launchScanner(int animalId) {
+  scanner.startScan();
+}
+
+void launchAnimal(int animalId) {
+
+  pageMode = true; // NOT USED
+
+  animalPage.setImage(animalImages[animalId]);
+  animalPage.start();
 }
 
 int readSwitches() {
@@ -27,6 +86,7 @@ int readSwitches() {
   // SIMULATE 4 ON/OFF SWITCHES
   int[] pinState = {floor(random(2)), floor(random(2)), floor(random(2)), floor(random(2))};
 
+  // DEMULTIPLEXING A 4 BIT BINARY TO DECIMAL
   int selection = 0;
   for (int i=0; i < pinState.length; i++) {
     selection += pinState[i] * (pow(2, i)); // selection = digitalRead(pinState[i]);
@@ -57,6 +117,7 @@ void detect(int currentDetection) {
       selection = currentDetection;
       checkDetectionMode = false;
       println("====> Final Selection: " + selection);
+      launchAnimal(selection);
     }
     checkTries++;
   }
