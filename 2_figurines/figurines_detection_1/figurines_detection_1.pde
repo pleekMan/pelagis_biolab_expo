@@ -9,17 +9,20 @@ Timer detectTimer;
 
 //
 
-int animalCount = 3;
+int animalCount = 11; // 10 animaux + 1 standby
 PImage[] animalImages;
 Page animalPage;
 Scanner scanner;
-
+boolean scannerMode = false;
 boolean pageMode = false;
+
+PImage pageFrame;
 
 
 void setup() {
-  size(1024, 600);
+  size(600, 1024, P2D);
 
+  pageFrame = loadImage("screenFrame.png");
   animalImages = loadPageImages("pages/");
   scanner = new Scanner();
   animalPage = new Page();
@@ -34,16 +37,33 @@ void setup() {
 }
 
 void draw() {
-  background(0, 0, 30);
 
+
+  if (scannerMode) {
+
+    fill(0, 10);
+    rect(0, 0, width, height);
+  } else {
+    background(0);
+  }
   //detectContinuosly();
 
-  scanner.render();
-  
-  if(scanner.isFinished()){
-   launchAnimal(selection); 
+
+  if (scannerMode) {
+    scanner.render();
+
+    if (scanner.isFinished()) {
+      scannerMode = false;
+      launchAnimal(selection);
+    }
   }
-  animalPage.render();
+
+  if (pageMode) {
+    //println("=> PAGE MODE");
+    animalPage.render();
+  }
+
+  image(pageFrame, 0, 0);
 }
 
 
@@ -52,7 +72,7 @@ PImage[] loadPageImages(String path) {
   PImage[] pageImages = new PImage[animalCount];
 
   for (int i=0; i < animalCount; i++) {
-    pageImages[i] = loadImage(path + "figurine_" + i + ".png");
+    pageImages[i] = loadImage(path + "figurine_" + i + ".jpg");
   }
 
   return pageImages;
@@ -70,12 +90,18 @@ void detectContinuosly() {
 }
 
 void launchScanner(int animalId) {
+  scannerMode = true;
+  pageMode = false;
+
+
+  scanner.setFigurineImages(loadImage("animalOutlines/figurine_1_outline.png"));
   scanner.startScan();
 }
 
 void launchAnimal(int animalId) {
 
   pageMode = true; // NOT USED
+  scannerMode = false;
 
   animalPage.setImage(animalImages[animalId]);
   animalPage.start();
@@ -117,7 +143,7 @@ void detect(int currentDetection) {
       selection = currentDetection;
       checkDetectionMode = false;
       println("====> Final Selection: " + selection);
-      launchAnimal(selection);
+      launchScanner(selection);
     }
     checkTries++;
   }
@@ -137,5 +163,7 @@ void keyPressed() {
     detect(3);
   } else if (key == '4') {
     detect(4);
+  } else if (key == 'p') {
+    launchAnimal(1);
   }
 }

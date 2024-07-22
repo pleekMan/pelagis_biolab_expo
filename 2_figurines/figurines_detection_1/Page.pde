@@ -1,7 +1,8 @@
 class Page {
 
   PImage pageImage;
-  float opacity = 255;
+  float time = 0;
+  float vel = 0.01;
 
   Page() {
   }
@@ -11,13 +12,21 @@ class Page {
   }
 
   void start() {
+    time = 0;
+
+    println("=> PAGE MODE : START");
   }
 
   void end() {
   }
 
   void render() {
-    tint(255, opacity);
+    time += vel;
+
+    pushStyle();
+    tint(255,time * 255);
     image(pageImage, 0, 0);
+    popStyle();
+
   }
 }
