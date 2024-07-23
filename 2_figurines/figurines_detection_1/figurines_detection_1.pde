@@ -6,11 +6,13 @@ int selection = 0;
 
 
 Timer detectTimer;
+Timer standByTimer;
 
 //
 
 int animalCount = 11; // 10 animaux + 1 standby
 PImage[] animalImages;
+PImage[] animalOutlines;
 Page animalPage;
 Scanner scanner;
 boolean scannerMode = false;
@@ -21,23 +23,29 @@ PImage pageFrame;
 
 void setup() {
   size(600, 1024, P2D);
+  frameRate(60);
 
   pageFrame = loadImage("screenFrame.png");
   animalImages = loadPageImages("pages/");
-  scanner = new Scanner();
   animalPage = new Page();
 
-
-
-  launchAnimal(0);
-
+  animalOutlines = loadAnimalOutlines("animalOutlines/");
+  scanner = new Scanner();
+  scanner.setScannerHeaderImage(animalOutlines[0]);
 
   detectTimer = new Timer(2000);
   detectTimer.start();
+
+  standByTimer = new Timer(20000);
+  standByTimer.start();
+
+
+  launchAnimal(0);
 }
 
 void draw() {
 
+  //detectContinuosly();
 
   if (scannerMode) {
 
@@ -46,7 +54,7 @@ void draw() {
   } else {
     background(0);
   }
-  //detectContinuosly();
+
 
 
   if (scannerMode) {
@@ -61,9 +69,22 @@ void draw() {
   if (pageMode) {
     //println("=> PAGE MODE");
     animalPage.render();
+
+    if (standByTimer.isFinished() && selection != 0) {
+      selection = 0;
+      launchAnimal(selection); // animalPage 0 is the standBy Page
+      standByTimer.start();
+    }
   }
 
   image(pageFrame, 0, 0);
+
+  drawMiscellanea();
+
+  pushStyle();
+  fill(255, 0, 0);
+  text(mouseX + " | " + mouseY, 30, 15);
+  popStyle();
 }
 
 
@@ -76,6 +97,17 @@ PImage[] loadPageImages(String path) {
   }
 
   return pageImages;
+}
+
+PImage[] loadAnimalOutlines(String path) {
+
+  PImage[] aOutlines = new PImage[animalCount];
+
+  for (int i=0; i < animalCount; i++) {
+    aOutlines[i] = loadImage(path + "figurine_" + i + "_outline.png");
+  }
+
+  return aOutlines;
 }
 
 void loadScanImages() {
@@ -94,7 +126,7 @@ void launchScanner(int animalId) {
   pageMode = false;
 
 
-  scanner.setFigurineImages(loadImage("animalOutlines/figurine_1_outline.png"));
+  scanner.setOutlineImages(animalOutlines[animalId]);
   scanner.startScan();
 }
 
@@ -105,6 +137,8 @@ void launchAnimal(int animalId) {
 
   animalPage.setImage(animalImages[animalId]);
   animalPage.start();
+
+  standByTimer.start();
 }
 
 int readSwitches() {
@@ -149,6 +183,33 @@ void detect(int currentDetection) {
   }
   previousDetection = currentDetection;
   println("");
+}
+
+void drawMiscellanea() {
+
+  // DISCRETE PROGRESS BAR TOP RIGHT - BEGIN
+  int left = 544;
+  int top = 97;
+  int w = 7;
+  int h = 13;
+
+  noStroke();
+  fill(frameCount % 200 > 40 ? 255 : 0);
+  rect(left, top, w, h);
+  fill(frameCount % 200 > 60 ? 255 : 0);
+  rect(left, top + (h + 2), w, h);
+  fill(frameCount % 200 > 70 ? 255 : 0);
+  rect(left, top + ((h+2)*2), w, h);
+  
+  // DISCRETE PROGRESS BAR TOP RIGHT - END
+  
+  // LITTLE ELEVATORS LEFT CENTER - BEGIN
+  fill(255);
+  float motionS = sin(frameCount * 0.01);
+  ellipse(28,map(motionS,-1,1,490,770),10,3);
+  float motionC = cos(frameCount * 0.01);
+  ellipse(38,map(motionC,-1,1,490,770),10,3);
+  // LITTLE ELEVATORS LEFT CENTER - END
 }
 
 void keyPressed() {
