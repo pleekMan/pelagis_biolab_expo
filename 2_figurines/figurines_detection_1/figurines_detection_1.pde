@@ -70,8 +70,10 @@ void draw() {
     //println("=> PAGE MODE");
     animalPage.render();
 
+    // STAND BY MODE TIMER
     if (standByTimer.isFinished() && selection != 0) {
       selection = 0;
+      previousDetection = 0;
       launchAnimal(selection); // animalPage 0 is the standBy Page
       standByTimer.start();
     }
@@ -206,10 +208,26 @@ void drawMiscellanea() {
   // LITTLE ELEVATORS LEFT CENTER - BEGIN
   fill(255);
   float motionS = sin(frameCount * 0.01);
-  ellipse(28,map(motionS,-1,1,490,770),10,3);
+  ellipse(28,map(motionS,-1,1,490,770),8,8);
   float motionC = cos(frameCount * 0.01);
-  ellipse(38,map(motionC,-1,1,490,770),10,3);
+  ellipse(38,map(motionC,-1,1,490,770),8,8);
   // LITTLE ELEVATORS LEFT CENTER - END
+  
+  // 3D GLOBE - BEGIN
+  
+  pushMatrix();
+  translate(525,965);
+  noFill();
+  stroke(255);
+  ellipse (0,0,20 * (motionS * 2),20);
+  ellipse (0,0,20,20  * (motionS * 2));
+  
+  ellipse (0,0,10 * (motionS * 2),10);
+  ellipse (0,0,10,10  * (motionS * 2));
+  
+  popMatrix();
+  
+  // 3D GLOBE - END
 }
 
 void keyPressed() {
