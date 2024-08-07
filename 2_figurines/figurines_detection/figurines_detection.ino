@@ -10,7 +10,7 @@ int selection = 0;
 // (A SORT OF DEBOUNCING FOR WHEN PEOPLE HAVE A HARD TIME WITH THE INTERFACE)
 int detectionTries = 0;
 bool tryMode = false;
-int detectionDelay = 1000;
+int detectionDelay = 2000;
 
 void setup() {
 
@@ -46,9 +46,9 @@ void loop() {
   // THIS WORKS FINE
   for (int i = 0; i < 4; i++) {
     switchState[i] = digitalRead(switchPins[i]);
-    // Serial.print(i);
-    // Serial.print(':');
-    // Serial.println(switchState[i]);
+    Serial.print(i);
+    Serial.print(':');
+    Serial.println(switchState[i]);
   }
   currentDetection = (switchState[0] * (pow(2, 0))) + (switchState[1] * (pow(2, 1))) + (switchState[2] * (pow(2, 2))) + (switchState[3] * (pow(2, 3)));
   // Serial.print('=');
@@ -56,6 +56,7 @@ void loop() {
   //---
 
   // SYSTEM FOR NEEDING 3 TRIES TO ACCEPT THE OBJECT DETECT (A SORT OF DEBOUNCING FOR WHEN PEOPLE HAVE A HARD TIME WITH THE INTERFACE)
+  /*
   Serial.print("DETECT: ");
   Serial.println(currentDetection);
 
@@ -98,6 +99,7 @@ void loop() {
   //   //detectionTries = 0;
   // }
   previousDetection = currentDetection;
+ */
 
   Serial.println("==============");
   delay(detectionDelay);

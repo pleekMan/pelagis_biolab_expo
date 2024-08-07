@@ -6,8 +6,6 @@ class Scanner {
   float scanLinePosY = 0; // screen tilted 90deg (up -> down = right -> left)
   float scanLineVel = 3;
 
-  // Animated Miscellanea
-  float progressBarProgress = 0;
 
   Scanner() {
   }
